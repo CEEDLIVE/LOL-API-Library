@@ -11,8 +11,14 @@ Async(비동기), Sync(동기) 기반으로 데이터를 획득 할 수 있습니다.
 
 ▶ 동기 기반 사용시 반드시 Thread 에서 처리해주세요.
 
+
+
 사용방법
 ---------
+https://developer.riotgames.com 홈페이지에서 한국서버 로그인후 (실제 게임서버)
+API KEY 를 부여받고, 본 라이브러리를 사용합니다.
+
+
 ```
 EnvironmentConfig.getInstance().initialize("API_KEY");
 
