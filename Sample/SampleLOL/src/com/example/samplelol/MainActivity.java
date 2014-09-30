@@ -9,11 +9,12 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.noah.lol.config.EnvironmentConfig;
 import com.noah.lol.config.Region;
+import com.noah.lol.exception.NetworkException;
 import com.noah.lol.listener.SimpleNetworkListener;
-import com.noah.lol.network.NetworkException;
 import com.noah.lol.summoner.Summoner;
 import com.noah.lol.summoner.SummonerDto;
 
@@ -30,7 +31,7 @@ public class MainActivity extends Activity {
         Button btn = (Button)findViewById(R.id.button1);
 
         //initialize Api Key
-        EnvironmentConfig.getInstance().initialize("API_KEY");
+        EnvironmentConfig.getInstance().initialize("ff718eb6-13b5-4a10-bfa7-3c7c0edbbf69", Region.KR);
 		final Summoner summoner = new Summoner();
                
         //async
@@ -39,8 +40,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {			
 		        String name = et.getText().toString();
-		        
-				summoner.getAsyncSummonerInfo(name, Region.KR, new SimpleNetworkListener<SummonerDto>() {
+				summoner.getAsyncSummonerInfo(name, new SimpleNetworkListener<SummonerDto>() {
 		        	
 		        	@Override
 		        	public void onSuccess(SummonerDto data) {
@@ -51,7 +51,8 @@ public class MainActivity extends Activity {
 		        	
 		        	@Override
 		        	public void onNetworkFail(int errorCode, NetworkException e) {
-		        		Log.d("errorCode : ", "" + errorCode);        		
+		        		Toast.makeText(getApplicationContext(), e.getMessage() + e.getStatus(), Toast.LENGTH_SHORT).show();
+		        		Log.d("errorCode : ", "" + errorCode);   
 		        	}
 		        	
 		        });
@@ -78,7 +79,7 @@ public class MainActivity extends Activity {
 
 						SummonerDto dto = null;
 				        try {
-							dto = summoner.getSyncSummonerInfo(params[0], Region.KR);
+							dto = summoner.getSyncSummonerInfo(params[0]);
 						} catch (NetworkException e) {    
 							e.printStackTrace();
 						}

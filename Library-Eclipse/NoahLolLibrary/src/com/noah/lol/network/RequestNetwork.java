@@ -34,19 +34,26 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+import com.noah.lol.config.EnvironmentConfig;
+import com.noah.lol.exception.EnvironmentException;
+import com.noah.lol.exception.NetworkException;
 import com.noah.lol.listener.NetworkListener;
 
 public abstract class RequestNetwork {
 	
 	public final static int RATE_LIMIT_EXCEEDED = 429;
+	public final static int BAD_REQUEST_ENVIRONMENT_CONFIG = -100;
 	public final static int REQUEST_RESULT = 100;
 	public final static int REQUEST_SUCCESS = 101;
 	public final static int REQUEST_FAIL = 102;
 	public final static String EXCEPTION_KEY = "NetworkException";
 	public final static String RESPONSE_KEY = "ResponseBody";
-	
-		
+				
 	protected void asyncRequestGet(final String url, final NetworkListener<String> listener) {
+		
+		if (url == null) {
+			return;
+		}
 		
 		final Handler handler = new Handler() {
 			
@@ -99,6 +106,10 @@ public abstract class RequestNetwork {
     }
 	
 	protected String syncRequestGet(String url) throws NetworkException {
+		
+		if (url == null) {
+			return null;
+		}
         
 		String responseBody = null;
 		HttpClient httpclient = new DefaultHttpClient();
@@ -153,6 +164,19 @@ public abstract class RequestNetwork {
             throw e;
         }         
     };
+    
+    protected void environmentCheck() throws EnvironmentException  {
+    	
+		if (EnvironmentConfig.getInstance().getRegion() == null) {
+			throw new EnvironmentException("Region Null Exception");
+		}
+
+		if (EnvironmentConfig.getInstance().getApiKey() == null) {
+			throw new EnvironmentException("Api Key Null Exception");
+		}
+		
+    }
+    
 
 
 }

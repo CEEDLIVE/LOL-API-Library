@@ -17,9 +17,9 @@
 */
 package com.noah.lol.listener;
 
-import com.noah.lol.network.NetworkException;
+import com.noah.lol.exception.NetworkException;
 
 public interface NetworkListener<T> {
-	public void onSuccess(T data);
+	public void onSuccess(T json);
 	public void onNetworkFail(int errorCode, NetworkException e);
 }

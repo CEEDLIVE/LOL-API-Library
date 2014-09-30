@@ -20,40 +20,25 @@ package com.noah.lol.summoner;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.net.Uri;
-
-import com.noah.lol.config.EnvironmentConfig;
+import com.noah.lol.exception.NetworkException;
 import com.noah.lol.listener.NetworkListener;
 import com.noah.lol.listener.SimpleNetworkListener;
-import com.noah.lol.network.NetworkException;
-import com.noah.lol.network.RequestNetwork;
 
-public class Summoner extends RequestNetwork {
-	
-	
-	private String buildSummonerNameApiUrl(String summonerName, String region) {
+public class Summoner extends SummonerNetwork {
 		
-		Uri.Builder urlBuilder = new Uri.Builder();
-		urlBuilder.scheme("https")
-		.appendEncodedPath("/" + region + ".api.pvp.net")
-		.appendEncodedPath("api/lol")
-		.appendEncodedPath(region)
-		.appendEncodedPath("v1.4/summoner/by-name")
-		.appendEncodedPath(summonerName)
-		.appendQueryParameter("api_key", EnvironmentConfig.getInstance().getApiKey());
-		
-		return urlBuilder.toString();
-	}
-	
-	public void getAsyncSummonerInfo(final String summonerName, String region, final SimpleNetworkListener<SummonerDto> listener) {
-						
-		String url = buildSummonerNameApiUrl(summonerName, region);
+			
+	private void sendAsyncSummonerInfo(String url, final String summonerName, final SimpleNetworkListener<SummonerDto> listener) {
 				
 		asyncRequestGet(url, new NetworkListener<String>(){
 
 			@Override
-			public void onSuccess(String data) {
-				SummonerDto summonerDto = parserSummonerInfoJson(summonerName, data);
+			public void onSuccess(String json) {
+				
+				if (json == null) {
+					return;						
+				}
+				
+				SummonerDto summonerDto = parserSummonerInfoJson(summonerName, json);
 				if (listener != null) {
 					listener.onSuccess(summonerDto);
 				}				
@@ -70,11 +55,24 @@ public class Summoner extends RequestNetwork {
         
 	}
 
-	public SummonerDto getSyncSummonerInfo(String summonerName, String region) throws NetworkException {	
-		String url = buildSummonerNameApiUrl(summonerName, region);		
-		String json = syncRequestGet(url);				
+	public SummonerDto getSyncSummonerInfo(String summonerName) throws NetworkException {	
+		String json = syncRequestGet(buildSummonerInfoUrl(summonerName, null));				
 		return parserSummonerInfoJson(summonerName, json);	       
 	}
+
+	public void getAsyncSummonerInfo(String summonerName, SimpleNetworkListener<SummonerDto> listener) {
+		sendAsyncSummonerInfo(buildSummonerInfoUrl(summonerName, listener), summonerName, listener);
+	}
+	
+	public void getAsyncSummonerInfo(int summonerId, SimpleNetworkListener<SummonerDto> listener) {
+		String summonerName = Integer.toString(summonerId);
+		sendAsyncSummonerInfo(buildSummonerInfoUrl(summonerId, listener), summonerName, listener);
+	}
+	
+	public SummonerDto getSyncSummonerInfo(int summonerId) throws NetworkException {
+		String summonerName = Integer.toString(summonerId);
+		return getSyncSummonerInfo(summonerName);	       
+	}	
 	
 	private SummonerDto parserSummonerInfoJson(String summonerName, String json) {
 		JSONObject rootObject;
@@ -96,6 +94,7 @@ public class Summoner extends RequestNetwork {
 		}
 		return null;
 	}
+
 
 	
 }
