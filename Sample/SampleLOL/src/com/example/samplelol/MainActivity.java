@@ -1,5 +1,8 @@
 package com.example.samplelol;
 
+import java.util.Iterator;
+import java.util.List;
+
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,7 +19,10 @@ import com.noah.lol.config.Region;
 import com.noah.lol.exception.NetworkException;
 import com.noah.lol.listener.SimpleNetworkListener;
 import com.noah.lol.summoner.Summoner;
-import com.noah.lol.summoner.SummonerDto;
+import com.noah.lol.summoner.dto.MasteryDto;
+import com.noah.lol.summoner.dto.MasteryPageDto;
+import com.noah.lol.summoner.dto.MasteryPagesDto;
+import com.noah.lol.summoner.dto.SummonerDto;
 
 public class MainActivity extends Activity {
 
@@ -57,7 +63,27 @@ public class MainActivity extends Activity {
 		        	
 		        });
 				
-				
+				summoner.getAsyncMasteryInfo(11705807, new SimpleNetworkListener<MasteryPagesDto>(){
+					
+					@Override
+					public void onNetworkFail(int errorCode, NetworkException e) {
+						
+					}
+					
+					@Override
+					public void onSuccess(MasteryPagesDto result) {
+						Iterator<MasteryPageDto> it = result.getPages().iterator();
+ 						while(it.hasNext()) {
+							MasteryPageDto dto = it.next();
+							Log.d("MasteryPageDto", dto.getName() + "/" + dto.getId());
+							List<MasteryDto> masDto = dto.getMasteries();
+							for(MasteryDto masteryDto : masDto) {
+								Log.d("MasteryDto", masteryDto.getId() + "/" + masteryDto.getRank());
+							}
+ 						}
+					}
+					
+				});
 			}
 			
 		});
@@ -82,17 +108,49 @@ public class MainActivity extends Activity {
 							dto = summoner.getSyncSummonerInfo(params[0]);
 						} catch (NetworkException e) {    
 							e.printStackTrace();
-						}
-				        
+						} catch (NullPointerException e1) {   
+							e1.printStackTrace();							
+						}				        
 						return dto;
 					}
 					
 					protected void onPostExecute(SummonerDto result) {
+						if (result == null) return;
 		        		tvLevel.setText(""+result.getSummonerLevel());
 		        		tvId.setText(""+result.getId());	
 					}
 					
 				}.execute(name);
+				
+				
+				new AsyncTask<String, Void, MasteryPagesDto>() {
+
+					@Override
+					protected MasteryPagesDto doInBackground(String... params) {
+
+						MasteryPagesDto dto = null;
+				        try {
+							dto = summoner.getSyncMasteryInfo(Integer.parseInt(params[0]));
+						} catch (NetworkException e) {    
+							e.printStackTrace();
+						}
+				        
+						return dto;
+					}
+					
+					protected void onPostExecute(MasteryPagesDto result) {		        		
+		        		Iterator<MasteryPageDto> it = result.getPages().iterator();
+ 						while(it.hasNext()) {
+							MasteryPageDto dto = it.next();
+							Log.d("MasteryPageDto", dto.getName() + "/" + dto.getId());
+							List<MasteryDto> masDto = dto.getMasteries();
+							for(MasteryDto masteryDto : masDto) {
+								Log.d("MasteryDto", masteryDto.getId() + "/" + masteryDto.getRank());
+							}
+ 						}
+					}
+					
+				}.execute("11705807");
 		        
 			}
 		});

@@ -15,7 +15,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package com.noah.lol.summoner;
+package com.noah.lol.summoner.dto;
 
 public class SummonerDto {
 	
