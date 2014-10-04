@@ -17,12 +17,12 @@
 */
 package com.noah.lol.listener;
 
-import com.noah.lol.network.NetworkException;
+import com.noah.lol.exception.NetworkException;
 
 public class SimpleNetworkListener<T> implements NetworkListener<T> {
 
 	@Override
-	public void onSuccess(T data) {
+	public void onSuccess(T result) {
 		
 	}
 

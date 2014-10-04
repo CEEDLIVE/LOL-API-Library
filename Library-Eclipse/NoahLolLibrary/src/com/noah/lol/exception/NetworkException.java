@@ -15,7 +15,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package com.noah.lol.network;
+package com.noah.lol.exception;
 
 import org.apache.http.client.ClientProtocolException;
 

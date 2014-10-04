@@ -21,6 +21,7 @@ public class EnvironmentConfig {
 	
 	private static EnvironmentConfig Instance;
 	private String apiKey;
+	private String region;
 	
 	private EnvironmentConfig() {
 		
@@ -33,12 +34,17 @@ public class EnvironmentConfig {
 		return Instance;
 	}
 	
-	public void initialize (String apiKey) {
+	public void initialize (String apiKey, String region) {
 		this.apiKey = apiKey;
+		this.region = region;		
 	}
 
 	public String getApiKey() {
 		return apiKey;
+	}
+	
+	public String getRegion() {
+		return region;
 	}
 	
 }
